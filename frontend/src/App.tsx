@@ -1,10 +1,11 @@
 import React from 'react';
+import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LandingPage from './Components/LandingPage';
-import SignUpForm from './Components/SignUpForm';
-import OTPVerification from './Components/OTPVerification';
-import SignInForm from './Components/SignInForm';
-import ThankYouPage from './Components/ThankYouPage';
+import LandingPage from './Components/LandingPage/LandingPage';
+import SignUpForm from './Components/SignUpForm/SignUpForm';
+import OTPVerification from './Components/OTPVerification/OTPVerification';
+import SignInForm from './Components/SignInForm/SignInForm';
+import ThankYouPage from './Components/ThankYouPage/ThankYouPage';
 
 const App: React.FC = () => (
   <Router>

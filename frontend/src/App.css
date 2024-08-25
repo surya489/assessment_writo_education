@@ -1,0 +1,37 @@
+/* Common CSS Start */
+
+:root {
+    --darkPlum: #3A244A;
+    --white: #fff;
+    --redSalsa: #D72638;
+    --bordergray: #ccc;
+}
+
+.col_60 {
+    width: 60%;
+}
+
+.col_40 {
+    width: 40%;
+}
+
+.textRed {
+    color: var(--redSalsa);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+a {
+    outline: none;
+
+}
+
+/* Common CSS End */

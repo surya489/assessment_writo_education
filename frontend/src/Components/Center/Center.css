@@ -1,0 +1,11 @@
+.center {
+    max-width: 900px;
+    margin: auto;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
