@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import './assets/fonts/Fonts.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import LandingPage from './Components/LandingPage/LandingPage';
 import SignUpForm from './Components/SignUpForm/SignUpForm';

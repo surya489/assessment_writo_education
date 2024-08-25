@@ -50,8 +50,8 @@ const Form: React.FC<FormProps> = (props) => {
         return (
             <div className="signUpFormWrap col_60">
                 <div className='title'>
-                    <h2>Let us Know<span className='textRed'>!</span></h2>
-                    <Button isSubmit={false} isLink={true} text="<span class='textPlum'>Sign</span><span class='textRed'>In</span>" href="/signup" />
+                    <h2 className="poppinsBlack">Let us Know<span className='textRed'>!</span></h2>
+                    <Button isSubmit={false} isLink={true} text="<span class='textPlum lato'>Sign</span><span class='textRed lato'>In</span>" href="/signup" />
                 </div>
                 <form className="signUpForm" onSubmit={handleSubmit}>
                     <input
@@ -110,7 +110,7 @@ const Form: React.FC<FormProps> = (props) => {
     return (
         <div className="signInFormWrap col_60">
             <div className='title'>
-                <h2>Fill what we know<span className='textRed'>!</span></h2>
+                <h2 className="poppinsBlack">Fill what we know<span className='textRed'>!</span></h2>
             </div>
             <form className="signInForm" onSubmit={handleSubmit}>
                 <input

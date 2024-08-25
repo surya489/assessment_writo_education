@@ -15,8 +15,10 @@ select {
     box-sizing: border-box;
     border: 2px solid transparent;
     border-bottom-color: var(--bordergray);
-    padding: 10px;
+    /* padding: 10px; */
+    padding: 6px 6px;
     margin-bottom: 10px;
+    font-family: 'lato';
 }
 
 .signUpFormWrap,
@@ -26,6 +28,7 @@ select {
     padding: 20px;
     border: 1px solid var(--bordergray);
     border-radius: 10px;
+    font-family: 'lato';
 }
 
 a.link span {
@@ -39,6 +42,7 @@ a.link .textRed {
     display: block;
     position: relative;
     padding-right: 2px;
+    transition: all .3s;
 }
 
 a.link .textRed {
@@ -55,8 +59,25 @@ a.link .textRed::after {
     width: 100%;
     height: 1px;
     background-color: var(--darkPlum);
+    transition: all .3s;
 }
 
 a.link .textRed::after {
+    background-color: var(--redSalsa);
+}
+
+a.link:hover .textPlum {
+    color: var(--redSalsa);
+}
+
+a.link:hover .textRed {
+    color: var(--darkPlum);
+}
+
+a.link:hover .textRed::after {
+    background-color: var(--darkPlum);
+}
+
+a.link:hover .textPlum::after {
     background-color: var(--redSalsa);
 }
