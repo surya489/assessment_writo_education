@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt'); // Added bcrypt import
+const nodemailer = require('nodemailer'); // Import Nodemailer
 require('dotenv').config();
 
 const User = require('./models/User'); // Import the User model
@@ -24,6 +25,15 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 // Middleware
 app.use(express.json());
 
+// Configure Nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // Use your email service
+    auth: {
+        user: process.env.EMAIL_USER, // Your email
+        pass: process.env.EMAIL_PASS // Your email password or app password
+    }
+});
+
 // Define routes
 app.post('/userForm', async (req, res) => {
     const { email, password } = req.body;
@@ -40,7 +50,17 @@ app.post('/userForm', async (req, res) => {
         const newUser = new User({ email, password: hashedPassword });
         await newUser.save();
 
-        res.status(201).json({ message: 'User registered successfully' });
+        // Send confirmation email
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: 'suryajaya4899@gmail.com',
+            subject: 'Registration Successful',
+            text: `Hello,\n\nThank you for register!`
+        };
+
+        await transporter.sendMail(mailOptions);
+
+        res.status(201).json({ message: 'User registered successfully and email sent' });
     } catch (err) {
         if (err.code === 11000) {
             // Duplicate key error
@@ -52,7 +72,6 @@ app.post('/userForm', async (req, res) => {
         }
     }
 });
-
 
 // Define a simple route
 app.get('/', (req, res) => {
