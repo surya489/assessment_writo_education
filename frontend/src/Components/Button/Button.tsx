@@ -1,4 +1,6 @@
 import React from "react";
+
+import './Button.css';
 import { Link } from "react-router-dom";
 
 interface ButtonProps {
@@ -15,9 +17,9 @@ const Button: React.FC<ButtonProps> = ({ text, isSubmit, href, isLink }) => {
         );
     }
 
-    if (isLink && href) {
+    if (href) {
         return (
-            <Link to={href} className="btn borderedBtn">
+            <Link to={href} className={`${isLink ? 'link' : 'btn borderedBtn'}`}>
                 {/* Render HTML safely using dangerouslySetInnerHTML */}
                 <span dangerouslySetInnerHTML={{ __html: text }} />
             </Link>

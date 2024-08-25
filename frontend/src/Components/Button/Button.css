@@ -1,0 +1,37 @@
+.btn {
+    display: block;
+    padding: 10px 20px;
+    text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: transparent;
+    transition: all .3s;
+}
+
+.btn.fillBtn {
+    background: var(--darkPlum);
+    border: 1px solid transparent;
+    color: var(--white);
+    margin-top: 20px;
+}
+
+.btn.fillBtn:hover {
+    color: var(--darkPlum);
+    background-color: transparent;
+    border-color: var(--darkPlum);
+}
+
+.btn.borderedBtn {
+    border: 1px solid var(--darkPlum);
+    color: var(--darkPlum);
+    padding: 8px 20px;
+    margin-top: 10px;
+}
+
+.btn.borderedBtn:hover {
+    background-color: var(--darkPlum);
+    color: var(--white);
+}

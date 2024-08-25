@@ -24,5 +24,39 @@ select {
     box-sizing: border-box;
     box-shadow: 0 4px 8px #0000001a;
     padding: 20px;
+    border: 1px solid var(--bordergray);
     border-radius: 10px;
+}
+
+a.link span {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+a.link .textPlum,
+a.link .textRed {
+    display: block;
+    position: relative;
+    padding-right: 2px;
+}
+
+a.link .textRed {
+    padding-left: 2px;
+    padding-right: 0;
+}
+
+a.link .textPlum::after,
+a.link .textRed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--darkPlum);
+}
+
+a.link .textRed::after {
+    background-color: var(--redSalsa);
 }

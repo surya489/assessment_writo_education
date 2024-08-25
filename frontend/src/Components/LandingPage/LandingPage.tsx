@@ -12,6 +12,7 @@ const LandingPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [verifyPassword, setVerifyPassword] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

@@ -108,11 +108,11 @@ const Form: React.FC<FormProps> = (props) => {
     } = props as SignInFormProps;
 
     return (
-        <div className="signInFormWrap col_50">
+        <div className="signInFormWrap col_60">
             <div className='title'>
                 <h2>Fill what we know<span className='textRed'>!</span></h2>
             </div>
-            <form className="signInForm col_50" onSubmit={handleSubmit}>
+            <form className="signInForm" onSubmit={handleSubmit}>
                 <input
                     type="email"
                     placeholder="Email"
@@ -126,7 +126,7 @@ const Form: React.FC<FormProps> = (props) => {
                     placeholder="Password"
                 />
                 <Button isSubmit={true} isLink={false} text="Sign In" />
-                <Button isSubmit={false} isLink={true} text="<span class='textPlum'>Sign</span><span class='textRed'>Up</span>" href="/signup" />
+                <Button isSubmit={false} isLink={false} text="Sign Up" href="/signup" />
             </form>
         </div>
     );
