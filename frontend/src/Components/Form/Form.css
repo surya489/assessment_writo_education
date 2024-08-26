@@ -103,3 +103,50 @@ a.link:hover .textPlum::after {
 .message.success {
     color: var(--success);
 }
+
+.btnWrap {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s;
+}
+
+.loading .loader {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loader img {
+    animation: rotateLoader 2s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Keyframes for rotating animation */
+@keyframes rotateLoader {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}

@@ -34,17 +34,33 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+// Function to generate a 6-digit OTP
+const generateOTP = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
 // Define routes
 app.post('/userForm', async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, confirmPassword, contactMode } = req.body;
 
-    if (!email || !password) {
+    if (!email && !password) {
         return res.status(400).json({ message: 'Email and password are required' });
+    } else if (!email) {
+        return res.status(400).json({ message: 'Please enter email' });
+    } else if (!password || !confirmPassword) {
+        return res.status(400).json({ message: 'Please enter password' });
+    } else if (password !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords should match' });
+    } else if (!contactMode) {
+        return res.status(400).json({ message: 'please select' });
     }
 
     try {
         // Hash the password before saving
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Generate a 6-digit OTP
+        const otp = generateOTP();
 
         // Create a new user
         const newUser = new User({ email, password: hashedPassword });
@@ -55,7 +71,7 @@ app.post('/userForm', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: 'suryajaya4899@gmail.com',
             subject: 'Registration Successful',
-            text: `Hello,\n\nThank you for register!`
+            text: `Hello,\n\nThank you for registering!\n\nYour OTP is: ${otp}\n\nPlease use this OTP to complete your registration.`
         };
 
         await transporter.sendMail(mailOptions);
