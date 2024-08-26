@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bcrypt = require('bcrypt'); // Added bcrypt import
-const nodemailer = require('nodemailer'); // Import Nodemailer
+const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const User = require('./models/User'); // Import the User model
+const User = require('./models/User');
 const authenticateJWT = require('./middleware/jwtMiddleware');
 
 const app = express();
@@ -19,10 +19,16 @@ app.use(cors({
     credentials: true
 }));
 
+// Handle preflight requests
+app.options('*', cors());
+
 // Connect to MongoDB
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
+    .catch(err => {
+        console.error('MongoDB connection error:', err);
+        process.exit(1); // Exit the process if there's a critical error
+    });
 
 // Middleware
 app.use(express.json());
@@ -45,16 +51,17 @@ const generateOTP = () => {
 app.post('/userForm', async (req, res) => {
     const { email, password, confirmPassword, contactMode, firstName, lastName } = req.body;
 
-    if (!email && !password) {
-        return res.status(400).json({ message: 'Email and password are required' });
-    } else if (!email) {
-        return res.status(400).json({ message: 'Please enter email' });
-    } else if (!password || !confirmPassword) {
-        return res.status(400).json({ message: 'Please enter password' });
-    } else if (password !== confirmPassword) {
+    if (!email) {
+        return res.status(400).json({ message: 'Email is required' });
+    }
+    if (!password || !confirmPassword) {
+        return res.status(400).json({ message: 'Password and confirm password are required' });
+    }
+    if (password !== confirmPassword) {
         return res.status(400).json({ message: 'Passwords should match' });
-    } else if (!contactMode) {
-        return res.status(400).json({ message: 'please select' });
+    }
+    if (!contactMode) {
+        return res.status(400).json({ message: 'Contact mode is required' });
     }
 
     try {
@@ -80,9 +87,9 @@ app.post('/userForm', async (req, res) => {
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_USER,
+            to: email, // Send to the user's email
             subject: 'Registration Successful',
-            text: `Hello,\n\nThank you for registering!\n\nYour OTP is: ${otp}\n\nPlease use this OTP to complete your registration.`
+            text: `Hello ${firstName},\n\nThank you for registering!\n\nYour OTP is: ${otp}\n\nPlease use this OTP to complete your registration.`
         };
 
         await transporter.sendMail(mailOptions);
@@ -99,8 +106,6 @@ app.post('/userForm', async (req, res) => {
     }
 });
 
-
-// Update the otpVerify route
 app.post('/otpVerify', async (req, res) => {
     const { email, otp } = req.body;
 
@@ -126,25 +131,23 @@ app.post('/otpVerify', async (req, res) => {
 
         // Generate JWT Token
         const token = jwt.sign(
-            { userId: user._id }, // Payload with user ID
-            process.env.JWT_SECRET, // Secret key from .env
-            { expiresIn: '1h' } // Token expiration time
+            { userId: user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
         );
 
         // Set token as an HttpOnly cookie
         res.cookie('access-token', token, {
-            httpOnly: true, // Prevents client-side access to the cookie
-            sameSite: 'Strict', // Protects against CSRF attacks
-            secure: process.env.NODE_ENV === 'production', // Ensures cookie is sent only over HTTPS in production
-            maxAge: 3600000, // 1 hour in milliseconds
+            httpOnly: true,
+            sameSite: 'Strict',
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 3600000,
         });
-
-        // Safely accessing user fields, providing defaults if undefined
 
         res.status(200).json({
             message: 'OTP verified successfully',
             userDetails: {
-                firstName: user.firstName,  // Use ?? to handle undefined values
+                firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
                 contactMode: user.contactMode,
