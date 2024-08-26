@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
-
+import Cookies from 'js-cookie';
 import './LandingPage.css';
 import Center from '../Center/Center';
 import signUpImage from '../../assets/images/signUp.png';
@@ -20,6 +20,14 @@ const LandingPage: React.FC = () => {
     const [otp, setOtp] = useState<string>('');
     const [isOTPVerify, setIsOTPVerify] = useState<boolean>(false); // New state to handle OTP verification
     const [showWelcome, setShowWelcome] = useState<boolean>(false); // State for showing welcome page
+    const token = Cookies.get('access-token');
+    axios.defaults.withCredentials = true; // Include credentials in requests
+
+    useEffect(() => {
+        if (token) {
+            setShowWelcome(true); // Show welcome page if token exists
+        }
+    }, [token]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -36,7 +44,6 @@ const LandingPage: React.FC = () => {
                     setLoading(false);
                     setStatusClass('success');
                     setError(response.data.message);
-                    setShowWelcome(true); // Show welcome page
                     setTimeout(() => setIsOTPVerify(true), 3000); // Transition to OTP verification after 3 seconds
                 } else {
                     setError('An unexpected response was received.');
@@ -66,44 +73,38 @@ const LandingPage: React.FC = () => {
                     setStatusClass('error');
                 }
             }, 2000); // Adjust the delay as needed
-            // setError('');
-            //     setStatusClass('');
         }
     };
 
 
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Add loading class immediately
-
-        // Retrieve token from local storage
-        const token = localStorage.getItem('token');
+        setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5000/otpVerify', { email, otp }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                withCredentials: true // Include cookies in the request
-            });
+            const response = await axios.post('http://localhost:5000/otpVerify', { email, otp });
 
             setTimeout(() => {
                 if (response.status === 200) {
                     setStatusClass('success');
                     setError('OTP verified successfully');
+                    const { token } = response.data;
+
+                    // Set the token in cookies using js-cookie
+                    Cookies.set('access-token', token, { expires: 2 });
                     // Additional success logic
-                    setTimeout(() => setIsOTPVerify(false), 3000); // Hide OTP verification form after 3 seconds and show sign-in form
+                    setTimeout(() => setIsOTPVerify(false), 3000); // Hide OTP verification form after 3 seconds
                 } else {
                     setStatusClass('error');
                     setError('An unexpected response was received.');
                 }
 
-                setLoading(false); // Remove loading class after delay
-            }, 2000)
+                setLoading(false);
+            }, 2000);
         } catch (err) {
             const axiosError = err as AxiosError;
             setTimeout(() => {
-                setLoading(false); // Remove loading class
+                setLoading(false);
 
                 if (axiosError.response && axiosError.response.data) {
                     setError((axiosError.response.data as any).message || 'An error occurred.');
@@ -112,54 +113,56 @@ const LandingPage: React.FC = () => {
                     setError('An unknown error occurred.');
                     setStatusClass('error');
                 }
-            }, 2000); // Adjust the delay as needed
+            }, 2000);
         }
     };
 
 
     return (
         <Center>
-            <div className='hero'>
-                <div className='imageWrap col_40'>
-                    <div className='sizer'></div>
-                    <div className='image' style={{ backgroundImage: `url(${signUpImage})` }}></div>
+            {showWelcome ? (
+                <WelcomePage />
+            ) : (
+                <div className='hero'>
+                    <div className='imageWrap col_40'>
+                        <div className='sizer'></div>
+                        <div className='image' style={{ backgroundImage: `url(${signUpImage})` }}></div>
+                    </div>
+                    {isOTPVerify ? (
+                        <Form
+                            handleSubmit={handleVerify}
+                            otp={otp}
+                            setOtp={setOtp}
+                            isSignUp={false}
+                            isOTPVerify={true}
+                            error={error}
+                            statusClass={statusClass}
+                            loading={loading}
+                        />
+                    ) : (
+                        <Form
+                            handleSubmit={handleSubmit}
+                            firstName={firstName}
+                            setFirstName={setFirstName}
+                            lastName={lastName}
+                            setLastName={setLastName}
+                            email={email}
+                            setEmail={setEmail}
+                            password={password}
+                            setPassword={setPassword}
+                            confirmPassword={confirmPassword}
+                            setConfirmPassword={setConfirmPassword}
+                            contactMode={contactMode}
+                            setContactMode={setContactMode}
+                            isSignUp={true}
+                            isOTPVerify={false}
+                            error={error}
+                            statusClass={statusClass}
+                            loading={loading}
+                        />
+                    )}
                 </div>
-                {showWelcome && !isOTPVerify ? (
-                    <WelcomePage onProceed={() => setIsOTPVerify(true)} />
-                ) : isOTPVerify ? (
-                    <Form
-                        handleSubmit={handleVerify}
-                        otp={otp}
-                        setOtp={setOtp}
-                        isSignUp={false}
-                        isOTPVerify={true}
-                        error={error}
-                        statusClass={statusClass}
-                        loading={loading}
-                    />
-                ) : (
-                    <Form
-                        handleSubmit={handleSubmit}
-                        firstName={firstName}
-                        setFirstName={setFirstName}
-                        lastName={lastName}
-                        setLastName={setLastName}
-                        email={email}
-                        setEmail={setEmail}
-                        password={password}
-                        setPassword={setPassword}
-                        confirmPassword={confirmPassword}
-                        setConfirmPassword={setConfirmPassword}
-                        contactMode={contactMode}
-                        setContactMode={setContactMode}
-                        isSignUp={true}
-                        isOTPVerify={false}
-                        error={error}
-                        statusClass={statusClass}
-                        loading={loading}
-                    />
-                )}
-            </div>
+            )}
         </Center>
     );
 };
