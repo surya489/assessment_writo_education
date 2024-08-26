@@ -21,100 +21,98 @@ const LandingPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Show loading animation
+        setLoading(true); // Add loading class immediately
 
         try {
-            setTimeout(async () => {
-                try {
-                    const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode });
+            const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode });
 
-                    // Check status code for success
-                    if (response.status === 200) {
-                        // Remove loading animation, then show success message
-                        setLoading(false);
-                        setStatusClass('success');
-                        setError(response.data.message);
-                        setIsOTPVerify(true); // Switch to OTP verification after successful registration
-                    } else {
-                        setError('An unexpected response was received.');
-                        setStatusClass('error');
-                        setLoading(false); // Remove loading animation
-                    }
-                } catch (err) {
-                    const axiosError = err as AxiosError;
-                    setLoading(false); // Remove loading animation
+            // Add a short delay before hiding the loading animation
+            setTimeout(() => {
+                if (response.status === 200) {
+                    // Save token to local storage
+                    localStorage.setItem('token', response.data.token);
 
-                    if (axiosError.response && axiosError.response.data) {
-                        const errorData = axiosError.response.data;
-
-                        // Show error message
-                        if (typeof errorData === 'object' && (errorData as any).message) {
-                            setError((errorData as any).message);
-                        } else {
-                            setError(typeof errorData === 'string' ? errorData : JSON.stringify(errorData));
-                        }
-
-                        setStatusClass('error');
-                    } else {
-                        setError('An unknown error occurred.');
-                        setStatusClass('error');
-                    }
-
-                    // Remove error message after 2 seconds
-                    setTimeout(() => {
-                        setError('');
-                        setStatusClass('');
-                    }, 2000); // Message display duration
+                    setStatusClass('success');
+                    setError(response.data.message);
+                    setIsOTPVerify(true); // Switch to OTP verification after successful registration
+                } else {
+                    setStatusClass('error');
+                    setError('An unexpected response was received.');
                 }
-            }, 2000); // Initial loading duration
+
+                setLoading(false); // Remove loading class after delay
+            }, 2000); // Adjust the delay as needed
         } catch (err) {
             const axiosError = err as AxiosError;
-            setLoading(false);
 
-            if (axiosError.response && axiosError.response.data) {
-                setError((axiosError.response.data as any).message || 'An error occurred.');
-                setStatusClass('error');
-            } else {
-                setError('An unknown error occurred.');
-                setStatusClass('error');
-            }
-
-            // Remove error message after 2 seconds
+            // Add a short delay before hiding the loading animation
             setTimeout(() => {
-                setError('');
-                setStatusClass('');
-            }, 2000); // Message display duration
+                setLoading(false); // Remove loading class
+
+                if (axiosError.response && axiosError.response.data) {
+                    const errorData = axiosError.response.data;
+
+                    if (typeof errorData === 'object' && (errorData as any).message) {
+                        setError((errorData as any).message);
+                    } else {
+                        setError(typeof errorData === 'string' ? errorData : JSON.stringify(errorData));
+                    }
+
+                    setStatusClass('error');
+                } else {
+                    setError('An unknown error occurred.');
+                    setStatusClass('error');
+                }
+            }, 2000); // Adjust the delay as needed
         }
     };
+
 
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        setLoading(true); // Add loading class immediately
+
+        // Retrieve token from local storage
+        const token = localStorage.getItem('token');
 
         try {
-            const response = await axios.post('http://localhost:5000/otpVerify', { email, otp });
+            const response = await axios.post('http://localhost:5000/otpVerify', { email, otp }, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-            if (response.status === 200) {
-                setStatusClass('success');
-                setError('OTP verified successfully');
-                // Additional success logic
-            } else {
-                setStatusClass('error');
-                setError('An unexpected response was received.');
-            }
+            // Add a short delay before hiding the loading animation
+            setTimeout(() => {
+                if (response.status === 200) {
+                    setStatusClass('success');
+                    setError('OTP verified successfully');
+                    // Additional success logic
+                } else {
+                    setStatusClass('error');
+                    setError('An unexpected response was received.');
+                }
+
+                setLoading(false); // Remove loading class after delay
+            }, 2000); // Adjust the delay as needed
         } catch (err) {
             const axiosError = err as AxiosError;
-            if (axiosError.response && axiosError.response.data) {
-                setError((axiosError.response.data as any).message || 'An error occurred.');
-                setStatusClass('error');
-            } else {
-                setError('An unknown error occurred.');
-                setStatusClass('error');
-            }
-        } finally {
-            setLoading(false);
+
+            // Add a short delay before hiding the loading animation
+            setTimeout(() => {
+                setLoading(false); // Remove loading class
+
+                if (axiosError.response && axiosError.response.data) {
+                    setError((axiosError.response.data as any).message || 'An error occurred.');
+                    setStatusClass('error');
+                } else {
+                    setError('An unknown error occurred.');
+                    setStatusClass('error');
+                }
+            }, 2000); // Adjust the delay as needed
         }
     };
+
 
     return (
         <Center>
