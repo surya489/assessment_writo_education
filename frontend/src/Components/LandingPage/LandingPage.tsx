@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios, { AxiosError } from 'axios';
-import Cookies from 'js-cookie';
 import './LandingPage.css';
 import Center from '../Center/Center';
 import signUpImage from '../../assets/images/signUp.png';
@@ -20,21 +19,31 @@ const LandingPage: React.FC = () => {
     const [otp, setOtp] = useState<string>('');
     const [isOTPVerify, setIsOTPVerify] = useState<boolean>(false); // New state to handle OTP verification
     const [showWelcome, setShowWelcome] = useState<boolean>(false); // State for showing welcome page
-    const token = Cookies.get('access-token');
-    axios.defaults.withCredentials = true; // Include credentials in requests
 
     useEffect(() => {
-        if (token) {
-            setShowWelcome(true); // Show welcome page if token exists
-        }
-    }, [token]);
+        const fetchUserData = async () => {
+            const storedUserDetails = localStorage.getItem('userDetails');
+            if (storedUserDetails) {
+                const userDetails = JSON.parse(storedUserDetails);
+                setFirstName(userDetails.firstName);
+                setLastName(userDetails.lastName);
+                setEmail(userDetails.email);
+                setContactMode(userDetails.contactMode);
+                setShowWelcome(true);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    axios.defaults.withCredentials = true; // Include credentials in requests
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true); // Show loading animation
 
         try {
-            const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode }, { withCredentials: true });
+            const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode, firstName, lastName }, { withCredentials: true });
 
             setTimeout(() => {
                 if (response.status === 200) {
@@ -88,11 +97,9 @@ const LandingPage: React.FC = () => {
                 if (response.status === 200) {
                     setStatusClass('success');
                     setError('OTP verified successfully');
-                    const { token } = response.data;
-
-                    // Set the token in cookies using js-cookie
-                    Cookies.set('access-token', token, { expires: 2 });
-                    // Additional success logic
+                    // Update localStorage with user details
+                    localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+                    setShowWelcome(true);
                     setTimeout(() => setIsOTPVerify(false), 3000); // Hide OTP verification form after 3 seconds
                 } else {
                     setStatusClass('error');
@@ -117,11 +124,10 @@ const LandingPage: React.FC = () => {
         }
     };
 
-
     return (
         <Center>
             {showWelcome ? (
-                <WelcomePage />
+                <WelcomePage userDetails={{ firstName, lastName, email, contactMode }} />
             ) : (
                 <div className='hero'>
                     <div className='imageWrap col_40'>

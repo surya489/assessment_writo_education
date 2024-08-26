@@ -12,10 +12,6 @@
     width: 60%;
 }
 
-.col_40 {
-    width: 40%;
-}
-
 .textRed {
     color: var(--redSalsa);
 }

@@ -14,7 +14,7 @@ const url = process.env.MONGO_URI;
 
 // CORS configuration
 app.use(cors({
-    origin: 'http://localhost:3002', // Update to the correct frontend URL
+    origin: 'http://localhost:3000', // Update to the correct frontend URL
     methods: ['GET', 'POST'],
     credentials: true
 }));
@@ -43,7 +43,7 @@ const generateOTP = () => {
 
 // Define routes
 app.post('/userForm', async (req, res) => {
-    const { email, password, confirmPassword, contactMode } = req.body;
+    const { email, password, confirmPassword, contactMode, firstName, lastName } = req.body;
 
     if (!email && !password) {
         return res.status(400).json({ message: 'Email and password are required' });
@@ -68,6 +68,9 @@ app.post('/userForm', async (req, res) => {
         const otpExpires = Date.now() + 15 * 60 * 1000; // OTP valid for 15 minutes
 
         const newUser = new User({
+            firstName,
+            lastName,
+            contactMode,
             email,
             password: hashedPassword,
             otp,
@@ -128,8 +131,25 @@ app.post('/otpVerify', async (req, res) => {
             { expiresIn: '1h' } // Token expiration time
         );
 
+        // Set token as an HttpOnly cookie
+        res.cookie('access-token', token, {
+            httpOnly: true, // Prevents client-side access to the cookie
+            sameSite: 'Strict', // Protects against CSRF attacks
+            secure: process.env.NODE_ENV === 'production', // Ensures cookie is sent only over HTTPS in production
+            maxAge: 3600000, // 1 hour in milliseconds
+        });
 
-        res.status(200).json({ message: 'OTP verified successfully', token });
+        // Safely accessing user fields, providing defaults if undefined
+
+        res.status(200).json({
+            message: 'OTP verified successfully',
+            userDetails: {
+                firstName: user.firstName,  // Use ?? to handle undefined values
+                lastName: user.lastName,
+                email: user.email,
+                contactMode: user.contactMode,
+            }
+        });
     } catch (err) {
         console.error('Error verifying OTP:', err.message);
         res.status(500).json({ message: 'Server error', error: err.message });
