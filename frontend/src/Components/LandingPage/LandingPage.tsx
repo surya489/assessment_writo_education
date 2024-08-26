@@ -26,7 +26,7 @@ const LandingPage: React.FC = () => {
         setLoading(true); // Show loading animation
 
         try {
-            const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode });
+            const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode }, { withCredentials: true });
 
             setTimeout(() => {
                 if (response.status === 200) {
@@ -83,7 +83,8 @@ const LandingPage: React.FC = () => {
             const response = await axios.post('http://localhost:5000/otpVerify', { email, otp }, {
                 headers: {
                     'Authorization': `Bearer ${token}`
-                }
+                },
+                withCredentials: true // Include cookies in the request
             });
 
             setTimeout(() => {

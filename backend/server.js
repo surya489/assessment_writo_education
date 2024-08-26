@@ -128,6 +128,13 @@ app.post('/otpVerify', async (req, res) => {
             { expiresIn: '1h' } // Token expiration time
         );
 
+        // Set token as an HTTP-only cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // Set to true in production
+            maxAge: 3600000 // 1 hour in milliseconds
+        });
+
         res.status(200).json({ message: 'OTP verified successfully', token });
     } catch (err) {
         console.error('Error verifying OTP:', err.message);
