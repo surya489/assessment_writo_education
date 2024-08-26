@@ -3,12 +3,13 @@ import './Center.css';
 // Define the interface for the props
 interface CenterProps {
     children: React.ReactNode;
+    classname?: string;
 }
 
 // Use the interface to type the component
-const Center: React.FC<CenterProps> = ({ children }) => {
+const Center: React.FC<CenterProps> = ({ children, classname }) => {
     return (
-        <div className="center">
+        <div className={`${classname ? classname : ''} center`}>
             {children}
         </div>
     );

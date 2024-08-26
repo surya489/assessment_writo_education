@@ -31,4 +31,16 @@ a {
     text-decoration: none;
 }
 
+.bgGray {
+    background-color: var(--darkPlum);
+}
+
+.bgGray.center {
+    max-width: 100%;
+}
+
+.bgGray.center .notFoundWrap {
+    max-width: 800px;
+}
+
 /* Common CSS End */

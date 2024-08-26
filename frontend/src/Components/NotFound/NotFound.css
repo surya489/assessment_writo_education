@@ -1,0 +1,16 @@
+.notFoundWrap {
+    padding: 30px;
+    width: 100%;
+    text-align: center;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+    color: var(--white);
+}
+
+.pageContents h1 {
+    padding-bottom: 10px;
+    font-size: 40px;
+}
