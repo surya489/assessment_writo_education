@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcrypt'); // Added bcrypt import
 const nodemailer = require('nodemailer'); // Import Nodemailer
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const User = require('./models/User'); // Import the User model
+const authenticateJWT = require('./middleware/jwtMiddleware');
 
 const app = express();
 const url = process.env.MONGO_URI;
@@ -95,6 +97,7 @@ app.post('/userForm', async (req, res) => {
 });
 
 
+// Update the otpVerify route
 app.post('/otpVerify', async (req, res) => {
     const { email, otp } = req.body;
 
@@ -118,11 +121,23 @@ app.post('/otpVerify', async (req, res) => {
         user.otpExpires = null;
         await user.save();
 
-        res.status(200).json({ message: 'OTP verified successfully' });
+        // Generate JWT Token
+        const token = jwt.sign(
+            { userId: user._id }, // Payload with user ID
+            process.env.JWT_SECRET, // Secret key from .env
+            { expiresIn: '1h' } // Token expiration time
+        );
+
+        res.status(200).json({ message: 'OTP verified successfully', token });
     } catch (err) {
         console.error('Error verifying OTP:', err.message);
         res.status(500).json({ message: 'Server error', error: err.message });
     }
+});
+
+// Example protected route
+app.get('/protectedRoute', authenticateJWT, (req, res) => {
+    res.status(200).json({ message: 'This is a protected route', user: req.user });
 });
 
 
