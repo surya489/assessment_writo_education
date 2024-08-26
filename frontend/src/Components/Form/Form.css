@@ -81,3 +81,25 @@ a.link:hover .textRed::after {
 a.link:hover .textPlum::after {
     background-color: var(--redSalsa);
 }
+
+.message {
+    max-height: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    padding-top: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s;
+}
+
+.message.error,
+.message.success {
+    color: var(--redSalsa);
+    max-height: max-content;
+    opacity: 1;
+    visibility: visible;
+}
+
+.message.success {
+    color: var(--success);
+}

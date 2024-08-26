@@ -38,7 +38,7 @@ exports.signup = async (req, res) => {
 
         await sendOTPEmail(email, otp);
 
-        res.status(201).json({ message: 'User registered, OTP sent to email' });
+        res.status(200).json({ message: 'User registered, OTP sent to email' });
     } catch (error) {
         res.status(500).json({ error: 'Error signing up user' });
     }

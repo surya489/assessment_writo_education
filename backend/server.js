@@ -60,7 +60,7 @@ app.post('/userForm', async (req, res) => {
 
         await transporter.sendMail(mailOptions);
 
-        res.status(201).json({ message: 'User registered successfully and email sent' });
+        res.status(200).json({ message: 'User registered successfully and email sent' });
     } catch (err) {
         if (err.code === 11000) {
             // Duplicate key error

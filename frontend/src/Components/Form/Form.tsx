@@ -2,7 +2,7 @@ import React from "react";
 
 import './Form.css';
 import Button from "../Button/Button";
-import PasswordInput from "../PasswordInput/PasswordInput";  // Import PasswordInput component
+import PasswordInput from "../PasswordInput/PasswordInput";
 
 interface SignUpFormProps {
     firstName: string;
@@ -16,7 +16,9 @@ interface SignUpFormProps {
     newPassword: string;
     setNewPassword: React.Dispatch<React.SetStateAction<string>>;
     handleSubmit: (e: React.FormEvent) => void;
-    isSignUp: true;
+    isSignUp: boolean;
+    error: string;
+    statusClass: string; // New prop for status class
 }
 
 interface SignInFormProps {
@@ -25,7 +27,9 @@ interface SignInFormProps {
     verifyPassword: string;
     setVerifyPassword: React.Dispatch<React.SetStateAction<string>>;
     handleSubmit: (e: React.FormEvent) => void;
-    isSignUp: false;
+    isSignUp: boolean;
+    error: string;
+    statusClass: string; // New prop for status class
 }
 
 type FormProps = SignUpFormProps | SignInFormProps;
@@ -44,7 +48,9 @@ const Form: React.FC<FormProps> = (props) => {
             setPassword,
             newPassword,
             setNewPassword,
-            handleSubmit
+            error,
+            handleSubmit,
+            statusClass // Destructure statusClass
         } = props as SignUpFormProps;
 
         return (
@@ -68,13 +74,11 @@ const Form: React.FC<FormProps> = (props) => {
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                     />
-                    {/* Use PasswordInput component for password field */}
                     <PasswordInput
                         password={password}
                         setPassword={setPassword}
                         placeholder="Password"
                     />
-                    {/* Use PasswordInput component for retype password field */}
                     <PasswordInput
                         password={newPassword}
                         setPassword={setNewPassword}
@@ -94,6 +98,8 @@ const Form: React.FC<FormProps> = (props) => {
                     />
                     <Button isSubmit={true} isLink={false} text="Sign Up" />
                 </form>
+                {/* Display error message if it exists */}
+                {error && <div className={`message ${statusClass}`}>{error}</div>}
             </div>
         );
     }
@@ -104,7 +110,9 @@ const Form: React.FC<FormProps> = (props) => {
         setEmail,
         verifyPassword,
         setVerifyPassword,
-        handleSubmit
+        error,
+        handleSubmit,
+        statusClass // Destructure statusClass
     } = props as SignInFormProps;
 
     return (
@@ -128,6 +136,8 @@ const Form: React.FC<FormProps> = (props) => {
                 <Button isSubmit={true} isLink={false} text="Sign In" />
                 <Button isSubmit={false} isLink={false} text="Sign Up" href="/signup" />
             </form>
+            {/* Display error message if it exists */}
+            {error && <div className={`message ${statusClass}`}>{error}</div>}
         </div>
     );
 };
