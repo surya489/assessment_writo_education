@@ -1,0 +1,54 @@
+@font-face {
+    font-family: 'latoBold';
+    src: url('../fonts/Lato/Lato-Bold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'lato';
+    src: url('../fonts/Lato/Lato-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'poppinsBold';
+    src: url('../fonts/Poppins/Poppins-Bold.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'poppinsBlack';
+    src: url('../fonts/Poppins/Poppins-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'poppins';
+    src: url('../fonts/Poppins/Poppins-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+.latoBold {
+    font-family: 'latoBold';
+}
+
+.lato {
+    font-family: 'lato';
+}
+
+.poppinsBold {
+    font-family: 'poppinsBold';
+}
+
+.poppinsBlack {
+    font-family: 'poppinsBlack';
+}
+
+.poppins {
+    font-family: 'poppins';
+}

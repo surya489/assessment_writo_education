@@ -1,0 +1,152 @@
+.title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+input:not([type='submit']):not([type='buttonn']),
+select {
+    outline: none;
+    display: block;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    border: 2px solid transparent;
+    border-bottom-color: var(--bordergray);
+    /* padding: 10px; */
+    padding: 6px 6px;
+    margin-bottom: 10px;
+    font-family: 'lato';
+}
+
+.signUpFormWrap,
+.signInFormWrap {
+    box-sizing: border-box;
+    box-shadow: 0 4px 8px #0000001a;
+    padding: 20px;
+    border: 1px solid var(--bordergray);
+    border-radius: 10px;
+    font-family: 'lato';
+}
+
+a.link span {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+a.link .textPlum,
+a.link .textRed {
+    display: block;
+    position: relative;
+    padding-right: 2px;
+    transition: all .3s;
+}
+
+a.link .textRed {
+    padding-left: 2px;
+    padding-right: 0;
+}
+
+a.link .textPlum::after,
+a.link .textRed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background-color: var(--darkPlum);
+    transition: all .3s;
+}
+
+a.link .textRed::after {
+    background-color: var(--redSalsa);
+}
+
+a.link:hover .textPlum {
+    color: var(--redSalsa);
+}
+
+a.link:hover .textRed {
+    color: var(--darkPlum);
+}
+
+a.link:hover .textRed::after {
+    background-color: var(--darkPlum);
+}
+
+a.link:hover .textPlum::after {
+    background-color: var(--redSalsa);
+}
+
+.message {
+    max-height: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    padding-top: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s;
+}
+
+.message.error,
+.message.success {
+    color: var(--redSalsa);
+    max-height: max-content;
+    opacity: 1;
+    visibility: visible;
+}
+
+.message.success {
+    color: var(--success);
+}
+
+.btnWrap {
+    text-align: center;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    display: block;
+}
+
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s;
+}
+
+.loading .loader {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loader img {
+    animation: rotateLoader 2s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Keyframes for rotating animation */
+@keyframes rotateLoader {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}

@@ -1,0 +1,46 @@
+/* Common CSS Start */
+
+:root {
+    --darkPlum: #3A244A;
+    --white: #fff;
+    --redSalsa: #D72638;
+    --bordergray: #ccc;
+    --success: #4caf50;
+}
+
+.col_60 {
+    width: 60%;
+}
+
+.textRed {
+    color: var(--redSalsa);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+    margin: 0;
+}
+
+a {
+    outline: none;
+    text-decoration: none;
+}
+
+.bgGray {
+    background-color: var(--darkPlum);
+}
+
+.bgGray.center {
+    max-width: 100%;
+}
+
+.bgGray.center .notFoundWrap {
+    max-width: 800px;
+}
+
+/* Common CSS End */
