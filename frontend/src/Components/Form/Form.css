@@ -43,11 +43,13 @@ a.link .textRed {
     position: relative;
     padding-right: 2px;
     transition: all .3s;
+    color: var(--darkPlum);
 }
 
 a.link .textRed {
     padding-left: 2px;
     padding-right: 0;
+    color: var(--redSalsa);
 }
 
 a.link .textPlum::after,
