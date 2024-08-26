@@ -16,25 +16,14 @@ const LandingPage: React.FC = () => {
     const [statusClass, setStatusClass] = useState<string>(''); // State for status class
     const [loading, setLoading] = useState<boolean>(false); // New loading state
     const [contactMode, setContactMode] = useState<string>('');
+    const [otp, setOtp] = useState<string>('');
+    const [isOTPVerify, setIsOTPVerify] = useState<boolean>(false); // New state to handle OTP verification
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true); // Show loading animation
 
-        // Helper function to handle resetting form and states
-        const resetForm = () => {
-            setFirstName('');
-            setLastName('');
-            setEmail('');
-            setPassword('');
-            setConfirmPassword('');
-            setContactMode('contactMode');
-            setError('');
-            setStatusClass('');
-        };
-
         try {
-            // Wait for 2 seconds to simulate loading
             setTimeout(async () => {
                 try {
                     const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode });
@@ -45,21 +34,12 @@ const LandingPage: React.FC = () => {
                         setLoading(false);
                         setStatusClass('success');
                         setError(response.data.message);
+                        setIsOTPVerify(true); // Switch to OTP verification after successful registration
                     } else {
                         setError('An unexpected response was received.');
                         setStatusClass('error');
                         setLoading(false); // Remove loading animation
                     }
-
-                    // Remove success or error message after 2 seconds
-                    setTimeout(() => {
-                        setError(''); // Clear error message
-                        setStatusClass(''); // Reset status class
-                        if (response.status === 200) {
-                            resetForm(); // Reset form fields and states
-                        }
-                    }, 2000); // Message display duration
-
                 } catch (err) {
                     const axiosError = err as AxiosError;
                     setLoading(false); // Remove loading animation
@@ -87,21 +67,12 @@ const LandingPage: React.FC = () => {
                     }, 2000); // Message display duration
                 }
             }, 2000); // Initial loading duration
-
         } catch (err) {
-            setLoading(false); // Ensure loading is removed in case of error
-
             const axiosError = err as AxiosError;
+            setLoading(false);
+
             if (axiosError.response && axiosError.response.data) {
-                const errorData = axiosError.response.data;
-
-                // Show error message
-                if (typeof errorData === 'object' && (errorData as any).message) {
-                    setError((errorData as any).message);
-                } else {
-                    setError(typeof errorData === 'string' ? errorData : JSON.stringify(errorData));
-                }
-
+                setError((axiosError.response.data as any).message || 'An error occurred.');
                 setStatusClass('error');
             } else {
                 setError('An unknown error occurred.');
@@ -116,36 +87,75 @@ const LandingPage: React.FC = () => {
         }
     };
 
+    const handleVerify = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
 
+        try {
+            const response = await axios.post('http://localhost:5000/otpVerify', { email, otp });
+
+            if (response.status === 200) {
+                setStatusClass('success');
+                setError('OTP verified successfully');
+                // Additional success logic
+            } else {
+                setStatusClass('error');
+                setError('An unexpected response was received.');
+            }
+        } catch (err) {
+            const axiosError = err as AxiosError;
+            if (axiosError.response && axiosError.response.data) {
+                setError((axiosError.response.data as any).message || 'An error occurred.');
+                setStatusClass('error');
+            } else {
+                setError('An unknown error occurred.');
+                setStatusClass('error');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Center>
             <div className='hero'>
                 <div className='imageWrap col_40'>
                     <div className='sizer'></div>
-                    <div className='image' style={{ backgroundImage: `url(${signUpImage})` }}>
-                    </div>
+                    <div className='image' style={{ backgroundImage: `url(${signUpImage})` }}></div>
                 </div>
-                <Form
-                    handleSubmit={handleSubmit}
-                    firstName={firstName}
-                    setFirstName={setFirstName}
-                    lastName={lastName}
-                    setLastName={setLastName}
-                    email={email}
-                    setEmail={setEmail}
-                    password={password}
-                    setPassword={setPassword}
-                    confirmPassword={confirmPassword}
-                    setConfirmPassword={setConfirmPassword}
-                    contactMode={contactMode}
-                    setContactMode={setContactMode}
-                    isSignUp={true}
-                    isOTPVerify={false}
-                    error={error}
-                    statusClass={statusClass} // Pass status class as prop
-                    loading={loading} // Pass loading state
-                />
+                {isOTPVerify ? (
+                    <Form
+                        handleSubmit={handleVerify}
+                        otp={otp}
+                        setOtp={setOtp}
+                        isSignUp={false}
+                        isOTPVerify={true}
+                        error={error}
+                        statusClass={statusClass}
+                        loading={loading}
+                    />
+                ) : (
+                    <Form
+                        handleSubmit={handleSubmit}
+                        firstName={firstName}
+                        setFirstName={setFirstName}
+                        lastName={lastName}
+                        setLastName={setLastName}
+                        email={email}
+                        setEmail={setEmail}
+                        password={password}
+                        setPassword={setPassword}
+                        confirmPassword={confirmPassword}
+                        setConfirmPassword={setConfirmPassword}
+                        contactMode={contactMode}
+                        setContactMode={setContactMode}
+                        isSignUp={true}
+                        isOTPVerify={false}
+                        error={error}
+                        statusClass={statusClass}
+                        loading={loading}
+                    />
+                )}
             </div>
         </Center>
     );

@@ -39,11 +39,20 @@ interface SignInFormProps {
     isOTPVerify: boolean;
 }
 
-type FormProps = SignUpFormProps | SignInFormProps;
+interface OTPVerfyFormProps {
+    otp: string;
+    setOtp: React.Dispatch<React.SetStateAction<string>>;
+    handleSubmit: (e: React.FormEvent) => void;
+    isSignUp: boolean;
+    error: string;
+    statusClass: string; // New prop for status class
+    loading: boolean; // New loading prop
+    isOTPVerify: boolean;
+}
+
+type FormProps = SignUpFormProps | SignInFormProps | OTPVerfyFormProps;
 
 const Form: React.FC<FormProps> = (props) => {
-    const { loading } = props; // Destructure loading prop
-
     if (props.isSignUp) {
         // Sign-up form
         const {
@@ -65,8 +74,8 @@ const Form: React.FC<FormProps> = (props) => {
         } = props as SignUpFormProps;
 
         return (
-            <div className={`signUpFormWrap col_60 ${loading ? 'loading' : ''}`}> {/* Conditionally add loading class */}
-                <div className='title'>
+            <div className={`signUpFormWrap col_60 ${props.loading ? 'loading' : ''}`}>
+                <div className='title' >
                     <h2 className="poppinsBlack">Let us Know<span className='textRed'>!</span></h2>
                     <Button isSubmit={false} isLink={true} text="<span class='textPlum lato'>Sign</span><span class='textRed lato'>In</span>" href="/signin" />
                 </div>
@@ -115,9 +124,43 @@ const Form: React.FC<FormProps> = (props) => {
                     </div>
                 </form>
                 {/* Display error message if it exists */}
-                {error && <div className={`message ${statusClass}`}>{error}</div>}
-            </div>
+                {error && <div className={`message ${statusClass}`}> {error}</div >}
+            </div >
         );
+    }
+
+    if (props.isOTPVerify) {
+        const {
+            otp,
+            setOtp,
+            error,
+            handleSubmit,
+            statusClass // Destructure statusClass
+        } = props as OTPVerfyFormProps;
+
+        return (
+            <div className={`signInFormWrap col_60 ${props.loading ? 'loading' : ''}`}> {/* Conditionally add loading class */}
+                <div className='title' >
+                    <h2 className="poppinsBlack">Fill what we know<span className='textRed'>!</span></h2>
+                </div>
+                <form className="signInForm" onSubmit={handleSubmit}>
+                    <input
+                        type="number"
+                        placeholder="OTP"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                    />
+                    <div className="btnWrap">
+                        <div className="loader">
+                            <img src={loader} alt="loader" />
+                        </div>
+                        <Button isSubmit={true} isLink={false} text="Verify" />
+                    </div>
+                </form>
+                {error && <div className={`message ${statusClass}`}> {error}</div >}
+            </div >
+        );
+
     }
 
     // Sign-in form
@@ -132,7 +175,7 @@ const Form: React.FC<FormProps> = (props) => {
     } = props as SignInFormProps;
 
     return (
-        <div className={`signInFormWrap col_60 ${loading ? 'loading' : ''}`}> {/* Conditionally add loading class */}
+        <div className={`signInFormWrap col_60 ${props.loading ? 'loading' : ''}`}> {/* Conditionally add loading class */}
             <div className='title'>
                 <h2 className="poppinsBlack">Fill what we know<span className='textRed'>!</span></h2>
             </div>
@@ -148,7 +191,12 @@ const Form: React.FC<FormProps> = (props) => {
                     setPassword={setVerifyPassword}
                     placeholder="Password"
                 />
-                <Button isSubmit={true} isLink={false} text="Sign In" />
+                <div className="btnWrap">
+                    <div className="loader">
+                        <img src={loader} alt="loader" />
+                    </div>
+                    <Button isSubmit={true} isLink={false} text="Sign In" />
+                </div>
                 <Button isSubmit={false} isLink={false} text="Sign Up" href="/signup" />
             </form>
             {/* Display error message if it exists */}

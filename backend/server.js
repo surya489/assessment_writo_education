@@ -63,13 +63,19 @@ app.post('/userForm', async (req, res) => {
         const otp = generateOTP();
 
         // Create a new user
-        const newUser = new User({ email, password: hashedPassword });
+        const otpExpires = Date.now() + 15 * 60 * 1000; // OTP valid for 15 minutes
+
+        const newUser = new User({
+            email,
+            password: hashedPassword,
+            otp,
+            otpExpires,
+        });
         await newUser.save();
 
-        // Send confirmation email
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: 'suryajaya4899@gmail.com',
+            to: process.env.EMAIL_USER,
             subject: 'Registration Successful',
             text: `Hello,\n\nThank you for registering!\n\nYour OTP is: ${otp}\n\nPlease use this OTP to complete your registration.`
         };
@@ -83,11 +89,43 @@ app.post('/userForm', async (req, res) => {
             res.status(400).json({ message: 'Email already exists' });
         } else {
             console.error('Error saving user:', err.message);
-            console.error('Stack trace:', err.stack);
             res.status(500).json({ message: 'Server error', error: err.message });
         }
     }
 });
+
+
+app.post('/otpVerify', async (req, res) => {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+        return res.status(400).json({ message: 'Email and OTP are required' });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        if (user.otp !== otp || user.otpExpires < Date.now()) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
+        }
+
+        // Clear OTP after successful verification
+        user.otp = '';
+        user.otpExpires = null;
+        await user.save();
+
+        res.status(200).json({ message: 'OTP verified successfully' });
+    } catch (err) {
+        console.error('Error verifying OTP:', err.message);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+});
+
+
 
 // Define a simple route
 app.get('/', (req, res) => {
