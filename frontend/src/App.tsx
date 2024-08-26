@@ -6,7 +6,7 @@ import LandingPage from './Components/LandingPage/LandingPage';
 import SignUpForm from './Components/SignUpForm/SignUpForm';
 import OTPVerification from './Components/OTPVerification/OTPVerification';
 import SignInForm from './Components/SignInForm/SignInForm';
-import ThankYouPage from './Components/ThankYouPage/ThankYouPage';
+import WelcomePage from './Components/WelcomePage/WelcomePage';
 
 const App: React.FC = () => (
   <Router>
@@ -15,7 +15,7 @@ const App: React.FC = () => (
       <Route path="/signup" element={<SignUpForm />} />
       <Route path="/verify-otp" element={<OTPVerification />} />
       <Route path="/signin" element={<SignInForm />} />
-      <Route path="/thank-you" element={<ThankYouPage />} />
+      <Route path='/welcome' element={< WelcomePage />} />
     </Routes>
   </Router>
 );
