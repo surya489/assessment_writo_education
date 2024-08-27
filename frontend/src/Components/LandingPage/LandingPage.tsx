@@ -43,7 +43,7 @@ const LandingPage: React.FC = () => {
         setLoading(true); // Show loading animation
 
         try {
-            const response = await axios.post('https://assessment-writo-education.onrender.com/userForm', { email, password, confirmPassword, contactMode, firstName, lastName }, { withCredentials: true });
+            const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode, firstName, lastName }, { withCredentials: true });
 
             setTimeout(() => {
                 if (response.status === 200) {
@@ -91,7 +91,7 @@ const LandingPage: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('https://assessment-writo-education.onrender.com/otpVerify', { email, otp });
+            const response = await axios.post('http://localhost:5000/otpVerify', { email, otp });
 
             setTimeout(() => {
                 if (response.status === 200) {

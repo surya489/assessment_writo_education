@@ -14,7 +14,7 @@ const url = process.env.MONGO_URI;
 
 // CORS configuration
 app.use(cors({
-    origin: 'https://assessment-writo-education.onrender.com', // Update to the correct frontend URL
+    origin: 'http://localhost:3000', // Update to the correct frontend URL
     methods: ['GET', 'POST'],
     credentials: true
 }));
