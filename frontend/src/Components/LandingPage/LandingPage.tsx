@@ -19,6 +19,9 @@ const LandingPage: React.FC = () => {
     const [otp, setOtp] = useState<string>('');
     const [isOTPVerify, setIsOTPVerify] = useState<boolean>(false); // New state to handle OTP verification
     const [showWelcome, setShowWelcome] = useState<boolean>(false); // State for showing welcome page
+    const baseUrl = process.env.NODE_ENV === 'production'
+        ? 'https://assessment-writo-education.onrender.com'
+        : 'http://localhost:5000';
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -43,7 +46,7 @@ const LandingPage: React.FC = () => {
         setLoading(true); // Show loading animation
 
         try {
-            const response = await axios.post('http://localhost:5000/userForm', { email, password, confirmPassword, contactMode, firstName, lastName }, { withCredentials: true });
+            const response = await axios.post(`${baseUrl}/userForm`, { email, password, confirmPassword, contactMode, firstName, lastName }, { withCredentials: true });
 
             setTimeout(() => {
                 if (response.status === 200) {
@@ -91,7 +94,7 @@ const LandingPage: React.FC = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5000/otpVerify', { email, otp });
+            const response = await axios.post(`${baseUrl}/otpVerify`, { email, otp });
 
             setTimeout(() => {
                 if (response.status === 200) {
