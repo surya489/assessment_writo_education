@@ -11,25 +11,13 @@ const authenticateJWT = require('./middleware/jwtMiddleware');
 
 const app = express();
 const url = process.env.MONGO_URI;
-// const baseUrl = process.env.NODE_ENV === 'production'
-//     ? 'https://assessment-writo-education-ui.vercel.app'
-//     : 'http://localhost:3000/';
-
-const allowedOrigins = [
-    'https://assessment-writo-education-ui.vercel.app',
-    'http://localhost:3000'
-];
+const baseUrl = process.env.NODE_ENV === 'production'
+    ? 'https://assessment-writo-education-ui.vercel.app'
+    : 'http://localhost:3000';
 
 // CORS configuration
 app.use(cors({
-    origin: (origin, callback) => {
-        // Check if the incoming origin is in the list of allowed origins
-        if (allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: { baseUrl },
     methods: ['GET', 'POST'],
     credentials: true
 }));
@@ -104,7 +92,7 @@ app.post('/userForm', async (req, res) => {
             from: process.env.EMAIL_USER,
             to: process.env.EMAIL_USER, // Send to the user's email
             subject: 'Registration Successful',
-            text: `Hello ${firstName}, \n\nThank you for registering!\n\nYour OTP is: ${otp} \n\nPlease use this OTP to complete your registration.`
+            text: `Hello ${firstName},\n\nThank you for registering!\n\nYour OTP is: ${otp}\n\nPlease use this OTP to complete your registration.`
         };
 
         await transporter.sendMail(mailOptions);
@@ -155,7 +143,7 @@ app.post('/otpVerify', async (req, res) => {
         res.cookie('access-token', token, {
             httpOnly: true,
             sameSite: 'Strict',
-            secure: process.env.NODE_ENV == 'production',
+            secure: process.env.NODE_ENV === 'production',
             maxAge: 3600000,
         });
 
@@ -189,5 +177,5 @@ app.get('/', (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT} `);
+    console.log(`Server is running on port ${PORT}`);
 });
