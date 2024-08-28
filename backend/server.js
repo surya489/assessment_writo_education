@@ -12,7 +12,7 @@ const authenticateJWT = require('./middleware/jwtMiddleware');
 const app = express();
 const url = process.env.MONGO_URI;
 
-// CORS configuration
+// CORS configuration with credentials
 app.use(cors({
     origin: 'https://assessment-writo-education-ui.vercel.app',
     methods: ['GET', 'POST'],
@@ -139,7 +139,7 @@ app.post('/otpVerify', async (req, res) => {
         // Set token as an HttpOnly cookie
         res.cookie('access-token', token, {
             httpOnly: true,
-            sameSite: 'Strict',
+            sameSite: 'None',
             secure: process.env.NODE_ENV === 'production',
             maxAge: 3600000,
         });

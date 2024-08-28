@@ -12,7 +12,6 @@ interface WelcomePageProps {
 }
 
 const WelcomePage: React.FC<WelcomePageProps> = ({ userDetails }) => {
-    console.log(userDetails);
     const fullName = userDetails.firstName + userDetails.lastName;
     const contact = userDetails.contactMode;
     const email = userDetails.email;
