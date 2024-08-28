@@ -96,35 +96,34 @@ const LandingPage: React.FC = () => {
         try {
             const response = await axios.post(`${baseUrl}/otpVerify`, { email, otp });
 
-            setTimeout(() => {
-                if (response.status === 200) {
-                    setStatusClass('success');
-                    setError('OTP verified successfully');
-                    // Update localStorage with user details
-                    localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
-                    setShowWelcome(true);
-                    setTimeout(() => setIsOTPVerify(false), 3000); // Hide OTP verification form after 3 seconds
-                } else {
-                    setStatusClass('error');
-                    setError('An unexpected response was received.');
-                }
+            if (response.status === 200) {
+                setStatusClass('success');
+                setError('OTP verified successfully');
+                // Update localStorage with user details
+                localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+                setShowWelcome(true);
+                setTimeout(() => setIsOTPVerify(false), 3000);
+            } else {
+                handleError('An unexpected response was received.');
+            }
 
-                setLoading(false);
-            }, 2000);
         } catch (err) {
-            const axiosError = err as AxiosError;
-            setTimeout(() => {
-                setLoading(false);
-
-                if (axiosError.response && axiosError.response.data) {
-                    setError((axiosError.response.data as any).message || 'An error occurred.');
-                    setStatusClass('error');
-                } else {
-                    setError('An unknown error occurred.');
-                    setStatusClass('error');
-                }
-            }, 2000);
+            handleError(err as AxiosError | string);
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const handleError = (error: AxiosError | string) => {
+        let errorMessage = 'An unknown error occurred.';
+        if (typeof error === 'string') {
+            errorMessage = error;
+        } else if (axios.isAxiosError(error) && error.response) {
+            errorMessage = (error.response.data as any).message || 'An error occurred.';
+        }
+
+        setError(errorMessage);
+        setStatusClass('error');
     };
 
     return (
