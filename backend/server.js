@@ -11,13 +11,10 @@ const authenticateJWT = require('./middleware/jwtMiddleware');
 
 const app = express();
 const url = process.env.MONGO_URI;
-const baseUrl = process.env.NODE_ENV === 'production'
-    ? 'https://assessment-writo-education-ui.vercel.app'
-    : 'http://localhost:3000';
 
 // CORS configuration
 app.use(cors({
-    origin: { baseUrl },
+    origin: 'https://assessment-writo-education-ui.vercel.app',
     methods: ['GET', 'POST'],
     credentials: true
 }));
