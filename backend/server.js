@@ -142,6 +142,7 @@ app.post('/otpVerify', async (req, res) => {
             sameSite: 'None',
             secure: process.env.NODE_ENV === 'production',
             maxAge: 3600000,
+            path: '/',
         });
 
         res.status(200).json({
