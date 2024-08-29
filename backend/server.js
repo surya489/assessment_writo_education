@@ -160,6 +160,46 @@ app.post('/otpVerify', async (req, res) => {
     }
 });
 
+app.post('/signIn', async (req, res) => {
+    const { verifyEmail, verifyPassword } = req.body;
+
+    if (!verifyEmail) {
+        return res.status(400).json({ message: 'Please ente email to signin' });
+    }
+
+    if (!verifyPassword) {
+        return res.status(400).json({ message: 'Please ente pass to signin' });
+    }
+
+    try {
+        const user = await User.findOne({ email: verifyEmail });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(verifyPassword, user.password);
+
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid password' });
+        }
+
+        res.status(200).json({
+            message: 'Signed in successfully',
+            userDetails: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                contactMode: user.contactMode,
+            }
+        });
+    } catch (err) {
+        console.error('Error during sign in:', err.message);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+
+})
+
 // Example protected route
 app.get('/protectedRoute', authenticateJWT, (req, res) => {
     res.status(200).json({ message: 'This is a protected route', user: req.user });

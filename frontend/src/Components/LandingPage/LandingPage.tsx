@@ -4,133 +4,192 @@ import './LandingPage.css';
 import Center from '../Center/Center';
 import signUpImage from '../../assets/images/signUp.png';
 import Form from '../Form/Form';
-import WelcomePage from '../WelcomePage/WelcomePage'; // Import the new component
+import WelcomePage from '../WelcomePage/WelcomePage';
 
 const LandingPage: React.FC = () => {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [firstName, setFirstName] = useState<string>(() => localStorage.getItem('firstName') || '');
+    const [lastName, setLastName] = useState<string>(() => localStorage.getItem('lastName') || '');
+    const [email, setEmail] = useState<string>(() => localStorage.getItem('email') || '');
+    const [contactMode, setContactMode] = useState<string>(() => localStorage.getItem('contactMode') || '');
+    const [verifyEmail, setVerifyEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [verifyPassword, setVerifyPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
-    const [statusClass, setStatusClass] = useState<string>(''); // State for status class
-    const [loading, setLoading] = useState<boolean>(false); // New loading state
-    const [contactMode, setContactMode] = useState<string>('');
+    const [statusClass, setStatusClass] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
     const [otp, setOtp] = useState<string>('');
-    const [isOTPVerify, setIsOTPVerify] = useState<boolean>(false); // New state to handle OTP verification
-    const [showWelcome, setShowWelcome] = useState<boolean>(false); // State for showing welcome page
+    const [isOTPVerify, setIsOTPVerify] = useState<boolean>(false);
+    const [showWelcome, setShowWelcome] = useState<boolean>(false);
+    const [isSignUp, setIsSignUp] = useState<boolean>(() => localStorage.getItem('isSignUp') === 'true');
+    const [isSignIn, setIsSignIn] = useState<boolean>(() => localStorage.getItem('isSignIn') === 'true');
+
     const baseUrl = process.env.NODE_ENV === 'production'
         ? 'https://assessment-writo-education.onrender.com'
         : 'http://localhost:5000';
 
     useEffect(() => {
-        const fetchUserData = async () => {
-            const storedUserDetails = localStorage.getItem('userDetails');
-            if (storedUserDetails) {
-                const userDetails = JSON.parse(storedUserDetails);
-                setFirstName(userDetails.firstName);
-                setLastName(userDetails.lastName);
-                setEmail(userDetails.email);
-                setContactMode(userDetails.contactMode);
-                setShowWelcome(true);
-            }
-        };
-
-        fetchUserData();
+        // Update state if user details are found in localStorage
+        const storedUserDetails = localStorage.getItem('userDetails');
+        if (storedUserDetails) {
+            const userDetails = JSON.parse(storedUserDetails);
+            setFirstName(userDetails.firstName || '');
+            setLastName(userDetails.lastName || '');
+            setEmail(userDetails.email || '');
+            setContactMode(userDetails.contactMode || '');
+            setShowWelcome(true);
+            setIsSignUp(localStorage.getItem('isSignUp') === 'true');
+            setIsSignIn(localStorage.getItem('isSignIn') === 'true');
+        }
     }, []);
 
-    axios.defaults.withCredentials = true; // Include credentials in requests
+    axios.defaults.withCredentials = true;
 
+    // Handle form submission for user registration
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Show loading animation
+        setLoading(true);
 
         try {
             const response = await axios.post(`${baseUrl}/userForm`, { email, password, confirmPassword, contactMode, firstName, lastName }, { withCredentials: true });
+            setLoading(false);
 
-            setTimeout(() => {
-                if (response.status === 200) {
-                    // Save token to local storage
-                    localStorage.setItem('token', response.data.token);
-
-                    setLoading(false);
-                    setStatusClass('success');
-                    setError(response.data.message);
-                    setTimeout(() => setIsOTPVerify(true), 3000); // Transition to OTP verification after 3 seconds
-                } else {
-                    setError('An unexpected response was received.');
-                    setStatusClass('error');
-                    setLoading(false); // Remove loading animation
-                }
-            }, 2000);
+            if (response.status === 200) {
+                localStorage.setItem('token', response.data.token);
+                setStatusClass('success');
+                setError(response.data.message);
+                setIsOTPVerify(true);
+            } else {
+                setError('An unexpected response was received.');
+                setStatusClass('error');
+            }
         } catch (err) {
-            const axiosError = err as AxiosError;
-
-
-            setTimeout(() => {
-                setLoading(false); // Remove loading animation
-
-                if (axiosError.response && axiosError.response.data) {
-                    const errorData = axiosError.response.data;
-
-                    setError(typeof errorData === 'object' && (errorData as any).message
-                        ? (errorData as any).message
-                        : typeof errorData === 'string'
-                            ? errorData
-                            : JSON.stringify(errorData)
-                    );
-                    setStatusClass('error');
-                } else {
-                    setError('An unknown error occurred.');
-                    setStatusClass('error');
-                }
-            }, 2000); // Adjust the delay as needed
+            handleError(err);
         }
     };
 
-
+    // Handle OTP verification
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
         try {
             const response = await axios.post(`${baseUrl}/otpVerify`, { email, otp });
+            setLoading(false);
 
-            setTimeout(() => {
-                if (response.status === 200) {
-                    setStatusClass('success');
-                    setError('OTP verified successfully');
-                    // Update localStorage with user details
-                    localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
-                    setShowWelcome(true);
-                    setTimeout(() => setIsOTPVerify(false), 3000); // Hide OTP verification form after 3 seconds
-                } else {
-                    setStatusClass('error');
-                    setError('An unexpected response was received.');
-                }
-
-                setLoading(false);
-            }, 2000);
+            if (response.status === 200) {
+                localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
+                localStorage.setItem('isSignUp', 'true');
+                localStorage.setItem('isSignIn', 'true');
+                localStorage.setItem('otpVerify', 'true');
+                setStatusClass('success');
+                setError('OTP verified successfully');
+                setShowWelcome(true);
+                setIsSignUp(true);
+                setIsSignIn(true);
+                setIsOTPVerify(false);
+            } else {
+                setError('An unexpected response was received.');
+                setStatusClass('error');
+            }
         } catch (err) {
-            const axiosError = err as AxiosError;
-            setTimeout(() => {
-                setLoading(false);
-
-                if (axiosError.response && axiosError.response.data) {
-                    setError((axiosError.response.data as any).message || 'An error occurred.');
-                    setStatusClass('error');
-                } else {
-                    setError('An unknown error occurred.');
-                    setStatusClass('error');
-                }
-            }, 2000);
+            handleError(err);
         }
     };
 
+    // Handle user sign-in
+    const handleSignIn = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const response = await axios.post(`${baseUrl}/signIn`, { verifyEmail, verifyPassword });
+            setLoading(false);
+
+            if (response.status === 200) {
+                const { userDetails } = response.data;
+                localStorage.setItem('isSignIn', 'true');
+                localStorage.setItem('userDetails', JSON.stringify(userDetails));
+
+                setFirstName(userDetails.firstName || '');
+                setLastName(userDetails.lastName || '');
+                setEmail(userDetails.email || '');
+                setContactMode(userDetails.contactMode || '');
+
+                setStatusClass('success');
+                setError('Signed in successfully');
+                setShowWelcome(true);
+                setIsSignIn(true);
+                console.log('res', response.data.userDetails)
+            } else {
+                setError('An unexpected response was received.');
+                setStatusClass('error');
+            }
+        } catch (err) {
+            handleError(err);
+        }
+    };
+
+    // Handle user sign-out
+    const handleSignOut = () => {
+        localStorage.removeItem('userDetails');
+        const otpVerify = localStorage.getItem('otpVerify');
+        if (otpVerify) {
+            setIsOTPVerify(false);
+        }
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setVerifyEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setVerifyPassword('');
+        setError('');
+        setContactMode('');
+        setShowWelcome(false);
+        setIsSignUp(true);
+        localStorage.setItem('isSignIn', 'false');
+        setIsSignIn(false);
+    };
+
+    const handleSignUp = () => {
+        setError('');
+        localStorage.removeItem('isSignUp');
+        localStorage.removeItem('isSignIn');
+        localStorage.removeItem('otpVerify');
+        setIsSignUp(false);
+    }
+
+    const handleError = (err: unknown) => {
+        setLoading(false);
+        const axiosError = err as AxiosError;
+        if (axiosError.response && axiosError.response.data) {
+            const errorData = axiosError.response.data;
+            setError(typeof errorData === 'string' ? errorData : (errorData as any).message || 'An error occurred.');
+        } else {
+            setError('An unknown error occurred.');
+        }
+        setStatusClass('error');
+    };
+
+    const handleClick = () => {
+        setError('');
+        setIsSignUp(true);
+        setIsOTPVerify(false);
+        setIsSignIn(false);
+        localStorage.setItem('isSignUp', 'true');
+        localStorage.setItem('isSignIn', 'false');
+        localStorage.setItem('otpVerify', 'true');
+
+    }
+
     return (
         <Center>
-            {showWelcome ? (
-                <WelcomePage userDetails={{ firstName, lastName, email, contactMode }} />
+            {showWelcome && isSignIn ? (
+                <WelcomePage
+                    userDetails={{ firstName, lastName, email, contactMode }} // Pass state values populated from localStorage
+                    onSignOut={handleSignOut}
+                />
             ) : (
                 <div className='hero'>
                     <div className='imageWrap col_40'>
@@ -147,6 +206,20 @@ const LandingPage: React.FC = () => {
                             error={error}
                             statusClass={statusClass}
                             loading={loading}
+                        />
+                    ) : isSignUp && !isSignIn ? (
+                        <Form
+                            handleSubmit={handleSignIn}
+                            email={verifyEmail}
+                            setEmail={setVerifyEmail}
+                            verifyPassword={verifyPassword}
+                            setVerifyPassword={setVerifyPassword}
+                            isSignUp={false}
+                            isOTPVerify={false}
+                            error={error}
+                            statusClass={statusClass}
+                            loading={loading}
+                            onClick={handleSignUp}
                         />
                     ) : (
                         <Form
@@ -168,6 +241,7 @@ const LandingPage: React.FC = () => {
                             error={error}
                             statusClass={statusClass}
                             loading={loading}
+                            clickEvent={handleClick}
                         />
                     )}
                 </div>

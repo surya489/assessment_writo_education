@@ -24,6 +24,7 @@ interface SignUpFormProps {
     statusClass: string; // New prop for status class
     loading: boolean; // New loading prop
     isOTPVerify: boolean;
+    clickEvent?: () => void;
 }
 
 interface SignInFormProps {
@@ -37,6 +38,7 @@ interface SignInFormProps {
     statusClass: string; // New prop for status class
     loading: boolean; // New loading prop
     isOTPVerify: boolean;
+    onClick?: () => void;
 }
 
 interface OTPVerfyFormProps {
@@ -54,7 +56,6 @@ type FormProps = SignUpFormProps | SignInFormProps | OTPVerfyFormProps;
 
 const Form: React.FC<FormProps> = (props) => {
     if (props.isSignUp) {
-        // Sign-up form
         const {
             firstName,
             setFirstName,
@@ -70,6 +71,7 @@ const Form: React.FC<FormProps> = (props) => {
             setContactMode,
             error,
             handleSubmit,
+            clickEvent,
             statusClass // Destructure statusClass
         } = props as SignUpFormProps;
 
@@ -77,7 +79,13 @@ const Form: React.FC<FormProps> = (props) => {
             <div className={`signUpFormWrap col_60 ${props.loading ? 'loading' : ''}`}>
                 <div className='title' >
                     <h2 className="poppinsBlack">Let us Know<span className='textRed'>!</span></h2>
-                    <Button isSubmit={false} isLink={true} text="<span class='textPlum lato'>Sign</span><span class='textRed lato'>In</span>" href="/signin" />
+                    <Button
+                        isSubmit={false}
+                        hasClickEvent={true}
+                        isLink={false}
+                        text="<span class='textPlum lato'>Sign</span><span class='textRed lato'>In</span>"
+                        onClick={clickEvent}
+                    />
                 </div>
                 <form className="signUpForm" onSubmit={handleSubmit}>
                     <input
@@ -106,7 +114,7 @@ const Form: React.FC<FormProps> = (props) => {
                     />
                     <select value={contactMode} onChange={(e) => setContactMode(e.target.value)}>
                         <option value='' disabled>Contact Mode</option>
-                        <option value='call'>Call</option>
+                        <option value='phone'>Phone</option>
                         <option value='mail'>Mail</option>
                     </select>
                     <input
@@ -123,7 +131,6 @@ const Form: React.FC<FormProps> = (props) => {
                         <Button isSubmit={true} isLink={false} text="Sign Up" />
                     </div>
                 </form>
-                {/* Display error message if it exists */}
                 {error && <div className={`message ${statusClass}`}> {error}</div >}
             </div >
         );
@@ -171,12 +178,13 @@ const Form: React.FC<FormProps> = (props) => {
         setVerifyPassword,
         error,
         handleSubmit,
-        statusClass // Destructure statusClass
+        statusClass,
+        onClick
     } = props as SignInFormProps;
 
     return (
         <div className={`signInFormWrap col_60 ${props.loading ? 'loading' : ''}`}> {/* Conditionally add loading class */}
-            <div className='title'>
+            <div className='title' >
                 <h2 className="poppinsBlack">Fill what we know<span className='textRed'>!</span></h2>
             </div>
             <form className="signInForm" onSubmit={handleSubmit}>
@@ -197,10 +205,9 @@ const Form: React.FC<FormProps> = (props) => {
                     </div>
                     <Button isSubmit={true} isLink={false} text="Sign In" />
                 </div>
-                <Button isSubmit={false} isLink={false} text="Sign Up" href="/signup" />
+                <Button isSignUp={true} hasClickEvent={true} isSubmit={false} isLink={false} onClick={onClick} text="Sign Up" />
             </form>
-            {/* Display error message if it exists */}
-            {error && <div className={`message ${statusClass}`}>{error}</div>}
+            {error && <div className={`message ${statusClass}`}> {error}</div >}
         </div>
     );
 };

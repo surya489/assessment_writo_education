@@ -31,14 +31,14 @@ select {
     font-family: 'lato';
 }
 
-a.link span {
+.title button span {
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
 }
 
-a.link .textPlum,
-a.link .textRed {
+.title button span.textPlum,
+.title button span.textRed {
     display: block;
     position: relative;
     padding-right: 2px;
@@ -46,14 +46,14 @@ a.link .textRed {
     color: var(--darkPlum);
 }
 
-a.link .textRed {
+.title button span.textRed {
     padding-left: 2px;
     padding-right: 0;
     color: var(--redSalsa);
 }
 
-a.link .textPlum::after,
-a.link .textRed::after {
+.title button span.textPlum::after,
+.title button span.textRed::after {
     content: '';
     position: absolute;
     bottom: 0;
@@ -64,23 +64,23 @@ a.link .textRed::after {
     transition: all .3s;
 }
 
-a.link .textRed::after {
+.title button span.textRed::after {
     background-color: var(--redSalsa);
 }
 
-a.link:hover .textPlum {
+.title button span:hover .textPlum {
     color: var(--redSalsa);
 }
 
-a.link:hover .textRed {
+.title button span:hover .textRed {
     color: var(--darkPlum);
 }
 
-a.link:hover .textRed::after {
+.title button:hover .textRed::after {
     background-color: var(--darkPlum);
 }
 
-a.link:hover .textPlum::after {
+.title button:hover .textPlum::after {
     background-color: var(--redSalsa);
 }
 

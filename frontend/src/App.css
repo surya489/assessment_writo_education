@@ -16,6 +16,10 @@
     color: var(--redSalsa);
 }
 
+.textDarkPlum {
+    color: var(--darkPlum);
+}
+
 h1,
 h2,
 h3,

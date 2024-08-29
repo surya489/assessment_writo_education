@@ -5,12 +5,16 @@ import { Link } from "react-router-dom";
 
 interface ButtonProps {
     text: string;
-    isLink: boolean;
-    isSubmit: boolean; // Determines if the button is for form submission
-    href?: string; // Optional, used for navigation
+    isLink?: boolean;
+    isSubmit?: boolean;
+    href?: string;
+    isSignUp?: boolean;
+    hasClickEvent?: boolean;
+    onClick?: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ text, isSubmit, href, isLink }) => {
+const Button: React.FC<ButtonProps> = ({ text, isSubmit = false, href, isLink = false, onClick, hasClickEvent = false, isSignUp = false }) => {
+    const buttonType = isSubmit ? 'submit' : 'button';
     if (isSubmit) {
         return (
             <input className="btn fillBtn" type="submit" value={text} />
@@ -20,13 +24,25 @@ const Button: React.FC<ButtonProps> = ({ text, isSubmit, href, isLink }) => {
     if (href) {
         return (
             <Link to={href} className={`${isLink ? 'link' : 'btn borderedBtn'}`}>
-                {/* Render HTML safely using dangerouslySetInnerHTML */}
                 <span dangerouslySetInnerHTML={{ __html: text }} />
             </Link>
         );
     }
 
-    return null; // Return nothing if neither isSubmit nor href is provided
+    if (onClick && hasClickEvent) {
+        return (
+            <button
+                type={buttonType}
+                className={`${isSignUp ? 'btn borderedBtn' : ''}`}
+                onClick={hasClickEvent ? onClick : undefined}>
+                <span dangerouslySetInnerHTML={{ __html: text }} />
+            </button>
+        )
+    }
+
+    return (
+        <button className="borderedBtn btn signOut" onClick={onClick}>{text}</button>
+    );
 };
 
 export default Button;

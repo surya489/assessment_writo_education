@@ -1,15 +1,72 @@
 .welcomePage {
-    max-width: 100dvw;
+    max-width: 500px;
     width: 100%;
     box-sizing: border-box;
     padding: 30px;
+    background-color: var(--white);
+    color: var(--darkPlum);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    margin: auto;
+    animation: fadeIn 1.5s ease-out;
     box-shadow: 0 4px 8px #0000001a;
-    display: flex;
-    align-items: center;
 }
 
 .pageTitle {
     letter-spacing: 1px;
     font-size: 40px;
     color: var(--darkPlum);
+    margin-bottom: 0.5rem;
+}
+
+.pageContents {
+    position: relative;
+}
+
+.pageSubtitle {
+    font-size: 16px;
+    color: var(--darkPlum);
+    /* Keeping subtitles readable */
+    margin-bottom: 0.5rem;
+}
+
+.contactInfo {
+    margin-bottom: 1rem;
+}
+
+.pageText {
+    font-size: 1rem;
+    color: var(--darkPlum);
+}
+
+.highlight {
+    color: var(--redSalsa);
+    /* Use Red Salsa to highlight the user's name */
+    font-weight: bold;
+}
+
+.highlightText {
+    color: var(--redSalsa);
+    /* Green for positive, success-related information */
+    /* font-weight: bold; */
+}
+
+.pageClosing {
+    font-size: 1rem;
+    color: var(--white);
+    /* White text for the closing remark */
+    margin-top: 2rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
