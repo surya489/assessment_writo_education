@@ -87,7 +87,7 @@ app.post('/userForm', async (req, res) => {
 
         const mailOptions = {
             from: process.env.EMAIL_USER,
-            to: process.env.EMAIL_USER, // Send to the user's email
+            to: email, // Send to the user's email
             subject: 'Registration Successful',
             text: `Hello ${firstName},\n\nThank you for registering!\n\nYour OTP is: ${otp}\n\nPlease use this OTP to complete your registration.`
         };
