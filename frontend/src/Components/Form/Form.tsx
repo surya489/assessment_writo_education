@@ -254,7 +254,12 @@ const Form: React.FC<FormProps> = (props) => {
                     />
                     <div className="forgotBtnWrap">
                         <Button isSignUp={false} onClick={closeForgotPass} isLink={false} isForgotPass={true} text="Back" />
-                        <Button isSignUp={false} className={true} isSubmit={true} isForgotPass={true} isLink={false} text="Confirm" />
+                        <div className="btnWrap">
+                            <div className="loader">
+                                <img src={loader} alt="loader" />
+                            </div>
+                            <Button isSignUp={false} className={true} isSubmit={true} isForgotPass={true} isLink={false} text="Confirm" />
+                        </div>
                     </div>
                 </form>
             )}
