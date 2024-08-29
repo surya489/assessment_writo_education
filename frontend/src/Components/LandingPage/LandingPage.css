@@ -29,3 +29,14 @@
     background-repeat: no-repeat;
     border-radius: 10px;
 }
+
+@media(max-width:800px) {
+    .imageWrap {
+        display: none;
+    }
+
+    .hero {
+        padding: 0;
+        max-width: 400px;
+    }
+}

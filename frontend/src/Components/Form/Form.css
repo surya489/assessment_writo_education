@@ -195,12 +195,4 @@ select {
     .signUpFormWrap {
         width: 100%;
     }
-
-    .imageWrap {
-        display: none;
-    }
-
-    .hero {
-        padding: 0;
-    }
 }
