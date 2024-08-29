@@ -8,6 +8,10 @@
     --success: #4caf50;
 }
 
+.fs_14 {
+    font-size: 14px;
+}
+
 .col_60 {
     width: 60%;
 }
@@ -18,6 +22,10 @@
 
 .textDarkPlum {
     color: var(--darkPlum);
+}
+
+.textGray {
+    color: var(--bordergray);
 }
 
 h1,

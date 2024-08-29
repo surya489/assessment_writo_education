@@ -200,6 +200,57 @@ app.post('/signIn', async (req, res) => {
 
 })
 
+app.post('/reSetPass', async (req, res) => {
+    const { isResetPass, isConfirmResetPass, resetPassEmail } = req.body;
+
+    if (!resetPassEmail) {
+        return res.status(400).json({ message: 'Please enter mail' });
+    }
+
+    if (!isResetPass) {
+        return res.status(400).json({ message: 'Please enter Pass' });
+    }
+
+    if (!isConfirmResetPass) {
+        return res.status(400).json({ message: 'Please enter confirm pass' });
+    }
+
+    if (isResetPass !== isConfirmResetPass) {
+        return res.status(400).json({ message: 'Passwords should match' });
+    }
+
+    try {
+        const user = await User.findOne({ email: resetPassEmail });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' });
+        }
+
+        // Hash the new password
+        const salt = await bcrypt.genSalt(10);  // Generate salt
+        const hashedPassword = await bcrypt.hash(isResetPass, salt);  // Hash password
+
+        // Update the user's password in the database
+        user.password = hashedPassword;
+        await user.save();  // Save the updated user document
+
+        res.status(200).json({
+            message: 'Password reset successfully',
+            userDetails: {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                contactMode: user.contactMode,
+            }
+        });
+    } catch (err) {
+        console.error('Reset Password Error:', err.message);
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+
+
+})
+
 // Example protected route
 app.get('/protectedRoute', authenticateJWT, (req, res) => {
     res.status(200).json({ message: 'This is a protected route', user: req.user });

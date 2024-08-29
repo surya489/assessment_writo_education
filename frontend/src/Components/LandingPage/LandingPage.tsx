@@ -10,11 +10,14 @@ const LandingPage: React.FC = () => {
     const [firstName, setFirstName] = useState<string>(() => localStorage.getItem('firstName') || '');
     const [lastName, setLastName] = useState<string>(() => localStorage.getItem('lastName') || '');
     const [email, setEmail] = useState<string>(() => localStorage.getItem('email') || '');
+    const [resetPassEmail, setResetPassEmail] = useState<string>(() => localStorage.getItem('email') || '');
     const [contactMode, setContactMode] = useState<string>(() => localStorage.getItem('contactMode') || '');
     const [verifyEmail, setVerifyEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [verifyPassword, setVerifyPassword] = useState<string>('');
+    const [isResetPass, setIsResetPass] = useState<string>('');
+    const [isConfirmResetPass, setIsConfirmResetPass] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [statusClass, setStatusClass] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
@@ -23,13 +26,13 @@ const LandingPage: React.FC = () => {
     const [showWelcome, setShowWelcome] = useState<boolean>(false);
     const [isSignUp, setIsSignUp] = useState<boolean>(() => localStorage.getItem('isSignUp') === 'true');
     const [isSignIn, setIsSignIn] = useState<boolean>(() => localStorage.getItem('isSignIn') === 'true');
+    const [showForgotPass, setShowForgotPass] = useState<boolean>(false);
 
     const baseUrl = process.env.NODE_ENV === 'production'
         ? 'https://assessment-writo-education.onrender.com'
         : 'http://localhost:5000';
 
     useEffect(() => {
-        // Update state if user details are found in localStorage
         const storedUserDetails = localStorage.getItem('userDetails');
         if (storedUserDetails) {
             const userDetails = JSON.parse(storedUserDetails);
@@ -45,38 +48,37 @@ const LandingPage: React.FC = () => {
 
     axios.defaults.withCredentials = true;
 
-    // Handle form submission for user registration
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setStatusClass('loading');
 
         try {
             const response = await axios.post(`${baseUrl}/userForm`, { email, password, confirmPassword, contactMode, firstName, lastName }, { withCredentials: true });
-            setLoading(false);
-
             if (response.status === 200) {
                 localStorage.setItem('token', response.data.token);
                 setStatusClass('success');
                 setError(response.data.message);
                 setIsOTPVerify(true);
             } else {
-                setError('An unexpected response was received.');
                 setStatusClass('error');
+                setError('An unexpected response was received.');
             }
         } catch (err) {
             handleError(err);
+        } finally {
+            setLoading(false);
+            removeLoadingClass();
         }
     };
 
-    // Handle OTP verification
     const handleVerify = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setStatusClass('loading');
 
         try {
             const response = await axios.post(`${baseUrl}/otpVerify`, { email, otp });
-            setLoading(false);
-
             if (response.status === 200) {
                 localStorage.setItem('userDetails', JSON.stringify(response.data.userDetails));
                 localStorage.setItem('isSignUp', 'true');
@@ -89,48 +91,97 @@ const LandingPage: React.FC = () => {
                 setIsSignIn(true);
                 setIsOTPVerify(false);
             } else {
-                setError('An unexpected response was received.');
                 setStatusClass('error');
+                setError('An unexpected response was received.');
             }
         } catch (err) {
             handleError(err);
+        } finally {
+            setLoading(false);
+            removeLoadingClass();
         }
     };
 
-    // Handle user sign-in
     const handleSignIn = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+        setStatusClass('loading');
 
         try {
             const response = await axios.post(`${baseUrl}/signIn`, { verifyEmail, verifyPassword });
-            setLoading(false);
-
             if (response.status === 200) {
                 const { userDetails } = response.data;
                 localStorage.setItem('isSignIn', 'true');
                 localStorage.setItem('userDetails', JSON.stringify(userDetails));
-
                 setFirstName(userDetails.firstName || '');
                 setLastName(userDetails.lastName || '');
                 setEmail(userDetails.email || '');
                 setContactMode(userDetails.contactMode || '');
-
                 setStatusClass('success');
                 setError('Signed in successfully');
                 setShowWelcome(true);
                 setIsSignIn(true);
-                console.log('res', response.data.userDetails)
             } else {
-                setError('An unexpected response was received.');
                 setStatusClass('error');
+                setError('An unexpected response was received.');
             }
         } catch (err) {
             handleError(err);
+        } finally {
+            setLoading(false);
+            removeLoadingClass();
         }
     };
 
-    // Handle user sign-out
+    const resetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setStatusClass('loading');
+
+        try {
+            const response = await axios.post(`${baseUrl}/reSetPass`, { isResetPass, isConfirmResetPass, resetPassEmail });
+            if (response.status === 200) {
+                const { userDetails } = response.data;
+                localStorage.setItem('isSignIn', 'true');
+                localStorage.setItem('userDetails', JSON.stringify(userDetails));
+                setFirstName(userDetails.firstName || '');
+                setLastName(userDetails.lastName || '');
+                setEmail(userDetails.email || '');
+                setContactMode(userDetails.contactMode || '');
+                setStatusClass('success');
+                setError('Password reset successfully & you`ll be signed in..');
+                setShowWelcome(true);
+                setIsSignIn(true);
+            } else {
+                setStatusClass('error');
+                setError('An unexpected response was received.');
+            }
+        } catch (err) {
+            handleError(err);
+        } finally {
+            setLoading(false);
+            removeLoadingClass();
+        }
+    };
+
+    const removeLoadingClass = () => {
+        setTimeout(() => {
+            setStatusClass('');
+        }, 2000);
+    };
+
+    const handleError = (err: unknown) => {
+        setLoading(false);
+        const axiosError = err as AxiosError;
+        if (axiosError.response && axiosError.response.data) {
+            const errorData = axiosError.response.data;
+            setError(typeof errorData === 'string' ? errorData : (errorData as any).message || 'An error occurred.');
+        } else {
+            setError('An unknown error occurred.');
+        }
+        setStatusClass('error');
+    };
+
     const handleSignOut = () => {
         localStorage.removeItem('userDetails');
         const otpVerify = localStorage.getItem('otpVerify');
@@ -150,6 +201,10 @@ const LandingPage: React.FC = () => {
         setIsSignUp(true);
         localStorage.setItem('isSignIn', 'false');
         setIsSignIn(false);
+        setResetPassEmail('');
+        setIsResetPass('');
+        setIsConfirmResetPass('');
+        setShowForgotPass(false)
     };
 
     const handleSignUp = () => {
@@ -158,18 +213,6 @@ const LandingPage: React.FC = () => {
         localStorage.removeItem('isSignIn');
         localStorage.removeItem('otpVerify');
         setIsSignUp(false);
-    }
-
-    const handleError = (err: unknown) => {
-        setLoading(false);
-        const axiosError = err as AxiosError;
-        if (axiosError.response && axiosError.response.data) {
-            const errorData = axiosError.response.data;
-            setError(typeof errorData === 'string' ? errorData : (errorData as any).message || 'An error occurred.');
-        } else {
-            setError('An unknown error occurred.');
-        }
-        setStatusClass('error');
     };
 
     const handleClick = () => {
@@ -177,10 +220,17 @@ const LandingPage: React.FC = () => {
         setIsSignUp(true);
         setIsOTPVerify(false);
         setIsSignIn(false);
-        localStorage.setItem('isSignUp', 'true');
-        localStorage.setItem('isSignIn', 'false');
-        localStorage.setItem('otpVerify', 'true');
+        setResetPassEmail('');
+        setIsResetPass('');
+        setIsConfirmResetPass('');
+    }
 
+    const forgotPassword = () => {
+        setShowForgotPass(true);
+    }
+
+    const closeForgotPass = () => {
+        setShowForgotPass(false);
     }
 
     return (
@@ -212,6 +262,8 @@ const LandingPage: React.FC = () => {
                             handleSubmit={handleSignIn}
                             email={verifyEmail}
                             setEmail={setVerifyEmail}
+                            resetPassEmail={resetPassEmail}
+                            setResetPassEmail={setResetPassEmail}
                             verifyPassword={verifyPassword}
                             setVerifyPassword={setVerifyPassword}
                             isSignUp={false}
@@ -220,6 +272,14 @@ const LandingPage: React.FC = () => {
                             statusClass={statusClass}
                             loading={loading}
                             onClick={handleSignUp}
+                            showForgotPass={showForgotPass}
+                            forgotPassword={forgotPassword}
+                            closeForgotPass={closeForgotPass}
+                            resetPassword={resetPassword}
+                            resetPass={isResetPass}
+                            setResetPass={setIsResetPass}
+                            confirmResetPass={isConfirmResetPass}
+                            setConfirmResetPass={setIsConfirmResetPass}
                         />
                     ) : (
                         <Form
