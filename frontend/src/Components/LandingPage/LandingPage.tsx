@@ -65,10 +65,13 @@ const LandingPage: React.FC = () => {
                 setError('An unexpected response was received.');
             }
         } catch (err) {
-            handleError(err);
-        } finally {
-            setLoading(false);
-            removeLoadingClass();
+            setTimeout(() => {
+                handleError(err);
+                setLoading(false);
+                setTimeout(() => {
+                    setError('');
+                }, 2000)
+            }, 2000);
         }
     };
 
@@ -109,6 +112,7 @@ const LandingPage: React.FC = () => {
 
         try {
             const response = await axios.post(`${baseUrl}/signIn`, { verifyEmail, verifyPassword });
+            setLoading(true);
             if (response.status === 200) {
                 const { userDetails } = response.data;
                 localStorage.setItem('isSignIn', 'true');
@@ -126,10 +130,13 @@ const LandingPage: React.FC = () => {
                 setError('An unexpected response was received.');
             }
         } catch (err) {
-            handleError(err);
-        } finally {
-            setLoading(false);
-            removeLoadingClass();
+            setTimeout(() => {
+                handleError(err);
+                setLoading(false);
+                setTimeout(() => {
+                    setError('');
+                }, 2000)
+            }, 2000);
         }
     };
 
@@ -140,6 +147,7 @@ const LandingPage: React.FC = () => {
 
         try {
             const response = await axios.post(`${baseUrl}/reSetPass`, { isResetPass, isConfirmResetPass, resetPassEmail });
+            setLoading(true);
             if (response.status === 200) {
                 const { userDetails } = response.data;
                 localStorage.setItem('isSignIn', 'true');
@@ -150,17 +158,30 @@ const LandingPage: React.FC = () => {
                 setContactMode(userDetails.contactMode || '');
                 setStatusClass('success');
                 setError('Password reset successfully & you`ll be signed in..');
-                setShowWelcome(true);
-                setIsSignIn(true);
+                setTimeout(() => {
+                    setShowWelcome(true);
+                    setIsSignIn(true);
+                    setLoading(false);
+                    removeLoadingClass();
+                }, 2000);
             } else {
-                setStatusClass('error');
-                setError('An unexpected response was received.');
+                setLoading(true);
+                setTimeout(() => {
+                    setStatusClass('error');
+                    setError('An unexpected response was received.');
+                    removeLoadingClass();
+                    setLoading(false);
+                }, 2000);
             }
         } catch (err) {
-            handleError(err);
-        } finally {
-            setLoading(false);
-            removeLoadingClass();
+            setLoading(true);
+            setTimeout(() => {
+                handleError(err);
+                setLoading(false);
+                setTimeout(() => {
+                    setError('')
+                }, 2000)
+            }, 2000);
         }
     };
 
@@ -223,14 +244,23 @@ const LandingPage: React.FC = () => {
         setResetPassEmail('');
         setIsResetPass('');
         setIsConfirmResetPass('');
+        setVerifyPassword('');
+        setVerifyEmail('');
     }
 
     const forgotPassword = () => {
         setShowForgotPass(true);
+        setError('');
+        setVerifyPassword('');
+        setVerifyEmail('');
     }
 
     const closeForgotPass = () => {
         setShowForgotPass(false);
+        setError('');
+        setIsConfirmResetPass('');
+        setIsResetPass('');
+        setResetPassEmail('');
     }
 
     return (
